@@ -36,19 +36,19 @@ one for the conversion factor to apply to homogenise the outputs. For variables 
 ### Quick description
 
 The script make_interpol_iagos.sh first calls the Fortran routine interpol_iagos.f90,
-which interpolates the IAGOS data (in ASCII or NetCDF files, but note that the process is extremely long for ASCII files) on the model grid,
+which interpolates the IAGOS data (in NetCDF files) onto the model grid,
 and computes monthly means for the measured variables indicated in the user request.
-It reads the surface pressure fields and the vertical coefficients to compute pressure levels.
-Then, it reads each IAGOS file and interpolates linearly each observation on the grid (more exactly, following a reverse interpolation).
+It reads the surface pressure fields and the vertical coefficients to compute pressure levels, or simply reads the 3D pressure fields if they exist.
+Then, it reads each IAGOS file and interpolates linearly each observation onto the grid (more exactly, following a reverse interpolation).
 It also computes monthly means on each grid cell, using spatial weighting factors based on distances.
 interpol_iagos.f90 generates monthly gridded data, both from IAGOS and from the model, with one file
 per layer and per month.
 
-make_interpol_iagos.sh then generates regional output files on the specified UTLS
+make_interpol_iagos.sh then generates regional output files on the specified UT/LS
 grid levels. For each region, there are:
 - one IAGOS file, consisting in monthly-mean IAGOS data projected
-on the model grid. (IAGOS-DM)
-- one model file, consisting in the results from the simulation after applying a mask, depending on the IAGOS sampling (model-M).
+onto the model grid. (IAGOS-DM)
+- one model file, consisting in the results from the simulation after applying a mask, depending on the IAGOS sampling (this_model-M).
 #
 In make_interpol_iagos.sh, the header shows you the dates delimitating
 the period you want to study. You also have to pick the model/simulation you
@@ -76,19 +76,19 @@ The input repertories are:
 - data/reference_values/this_model/, containing notably the two coefficient tables 
 zvamh_nlev.txt and zvbmh_nlev.txt, to be able to generate the 3D pressure fields.
 (nlev stands for the number of vertical grid levels)
-- data/IAGOS_database/this_file_format/, where the IAGOS files (one file per flight)
-are available until December 2017 for now. this_file_format can be either NetCDF or ASCII.
+- data/IAGOS_database/NetCDF/, where the IAGOS files (one file per flight)
+are available until December 2017 for now.
 Each repertory corresponds to a month, they are gathered in yearly repertories.
 - data/models_output/this_model/this_configuration/this_experiment/this_time_resolution
 
 2/ Preparing regional time series, ready for the analysis.
 
-2.1/ Using a R routine (compute_grid_indexes.R) to derive the regions coordinates with the grid resolution, both
+2.1/ Using a R routine (compute_grid_indexes.R) to derive the regions coordinates adapted to the grid resolution, both
 in lon/lat degrees and in their corresponding indexes in the model grid.
 
 2.2/ Using the latter as input for nco commands to extract the grid cells for each region.
 
-2.3/ Call of average_IAGOS.f90:
+2.3/ Call of regional_average_IAGOS.f90:
 
 The subroutines you need in the same repertory are:
 - INT2CHAR.f90
