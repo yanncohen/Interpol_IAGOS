@@ -1,4 +1,4 @@
-# Interpol_IAGOS
+# Interpol-IAGOS
 This package aims at assessing model simulations with IAGOS measurements.
 The main task is a shell script (make_interpol_iagos.sh)
 that treats the data, both simulation outputs and observations, to build two different products:
